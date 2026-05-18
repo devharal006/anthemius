@@ -1,7 +1,4 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false,
-  "rewrites": [
-    { "source": "/access", "destination": "/anthemius-access.html" }
-  ]
+  "trailingSlash": false
 }
