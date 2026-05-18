@@ -295,16 +295,19 @@
 
     .otp-row {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       margin: 32px 0 8px;
+      justify-content: space-between;
     }
 
     .otp-digit {
       flex: 1;
-      height: 60px;
+      min-width: 0;
+      max-width: 56px;
+      height: 56px;
       font-family: 'DM Sans', system-ui, sans-serif;
-      font-size: 22px;
-      font-weight: 400;
+      font-size: 20px;
+      font-weight: 500;
       text-align: center;
       color: var(--text);
       background: var(--input-bg);
@@ -315,6 +318,7 @@
       -webkit-appearance: none;
       appearance: none;
       caret-color: var(--teal);
+      padding: 0;
     }
 
     .otp-digit:focus {
@@ -435,7 +439,7 @@
       .invite-list { display: none; }
       .left-bottom { display: none; }
       .right { padding: 40px 24px 64px; }
-      .otp-digit { height: 52px; font-size: 20px; }
+      .otp-digit { height: 48px; font-size: 18px; max-width: 48px; }
     }
   </style>
 </head>
@@ -643,8 +647,6 @@
   const SUPABASE_URL      = 'https://yvotmmuwaxnpnbhaxtgf.supabase.co'
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2b3RtbXV3YXhucG5iaGF4dGdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMDE0OTIsImV4cCI6MjA5NDY3NzQ5Mn0._FVHvlw1SUKVkthJqqyolNWDaBuOB-icf3rwyh3KFZA'
 
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
   /* ── Blocked domains ────────────────────────────────────── */
   const BLOCKED = new Set([
     'gmail.com','googlemail.com','yahoo.com','yahoo.co.in','yahoo.co.uk',
@@ -667,6 +669,20 @@
     'safetymail.info','tempemail.net','fakemailgenerator.com',
     'spamfree24.org','harakirimail.com','mailboxy.fun','throwam.com',
   ])
+
+  /* ── Supabase client (lazy — created on first use) ────────
+     This means a missing/invalid URL won't crash the page on
+     load; the error only surfaces when the form is submitted.  */
+  let _sb = null
+  function getClient() {
+    if (!_sb) {
+      if (!SUPABASE_URL || SUPABASE_URL === 'YOUR_SUPABASE_URL') {
+        throw new Error('⚠️ Supabase URL not configured. Open access.html and replace YOUR_SUPABASE_URL and YOUR_SUPABASE_ANON_KEY with your real credentials from Supabase → Project Settings → API.')
+      }
+      _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    }
+    return _sb
+  }
 
   /* ── State ──────────────────────────────────────────────── */
   let formData = {}
@@ -755,7 +771,7 @@
     btn.textContent = 'Sending code…'
     btn.disabled = true
 
-    const { error } = await sb.auth.signInWithOtp({
+    const { error } = await getClient().auth.signInWithOtp({
       email,
       options: { shouldCreateUser: true }
     })
@@ -838,7 +854,7 @@
     errEl.textContent = ''
 
     // Verify OTP with Supabase
-    const { error: verifyErr } = await sb.auth.verifyOtp({
+    const { error: verifyErr } = await getClient().auth.verifyOtp({
       email: formData.email,
       token: code,
       type: 'email'
@@ -859,7 +875,7 @@
 
     // Store to database
     btn.textContent = 'Submitting…'
-    const { error: dbErr } = await sb
+    const { error: dbErr } = await getClient()
       .from('early_access_requests')
       .insert({
         first_name:   formData.firstName,
@@ -912,7 +928,7 @@
     const resendBtn = document.getElementById('resendBtn')
     resendBtn.disabled = true
     resendBtn.textContent = 'Sending…'
-    await sb.auth.signInWithOtp({ email: formData.email, options: { shouldCreateUser: true } })
+    await getClient().auth.signInWithOtp({ email: formData.email, options: { shouldCreateUser: true } })
     resendBtn.textContent = 'Resend code'
     document.getElementById('otpError').textContent = ''
     startResendTimer()
