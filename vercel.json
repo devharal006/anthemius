@@ -2,7 +2,6 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/access", "destination": "/anthemius-access.html" },
-    { "source": "/",       "destination": "/anthemius-landing.html" }
+    { "source": "/access", "destination": "/anthemius-access.html" }
   ]
 }

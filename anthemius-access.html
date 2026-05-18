@@ -446,7 +446,7 @@
   <!-- LEFT PANEL -->
   <div class="left">
     <div class="left-top">
-      <a href="anthemius-landing.html" class="back-link">
+      <a href="/" class="back-link">
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         Back to Anthemius
       </a>
@@ -601,7 +601,7 @@
           In the meantime, feel free to reach out at
           <a href="mailto:hello@anthemius.ai">hello@anthemius.ai</a>.
         </p>
-        <a href="anthemius-landing.html">&larr; Back to Anthemius</a>
+        <a href="/">&larr; Back to Anthemius</a>
       </div>
 
     </div>
@@ -640,8 +640,8 @@
      4. In Supabase → Authentication → Email settings:
         enable "Email OTP" and set OTP expiry to 600s
   ─────────────────────────────────────────────────────────── */
-  const SUPABASE_URL      = 'https://yvotmmuwaxnpnbhaxtgf.supabase.co'
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2b3RtbXV3YXhucG5iaGF4dGdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMDE0OTIsImV4cCI6MjA5NDY3NzQ5Mn0._FVHvlw1SUKVkthJqqyolNWDaBuOB-icf3rwyh3KFZA'
+  const SUPABASE_URL      = 'YOUR_SUPABASE_URL'
+  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'
 
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
