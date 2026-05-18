@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Request Access — Anthemius</title>
+  <meta name="description" content="Apply for early access to Anthemius — voice to building code-aware space design. Invite-only beta, Mumbai and Pune." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #FFFFFF;
+      --bg-lift:      #F7F8F9;
+      --teal:         #0F6E56;
+      --teal-accent:  #1D9E75;
+      --teal-tint:    #E1F5EE;
+      --teal-mid:     #9FE1CB;
+      --teal-glow:    rgba(29,158,117,0.08);
+      --text:         #1A1F27;
+      --text-muted:   #4A5260;
+      --text-faint:   #8C95A2;
+      --border:       rgba(26,31,39,0.08);
+      --border-mid:   rgba(26,31,39,0.12);
+      --input-bg:     #F7F8F9;
+      --error:        #C0392B;
+      --error-bg:     #FEF0EE;
+      --error-border: rgba(192,57,43,0.25);
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── LAYOUT ──────────────────────────────────────────── */
+    .page {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+
+    /* ─── LEFT PANEL ──────────────────────────────────────── */
+    .left {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 48px 56px;
+      background: var(--bg-lift);
+      border-right: 1px solid var(--border-mid);
+      overflow: hidden;
+    }
+
+    .left::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(29,158,117,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(29,158,117,0.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 90% 80% at 30% 60%, black 20%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 80% at 30% 60%, black 20%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .left::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; right: -60px;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(29,158,117,0.06) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .left-top, .left-bottom { position: relative; z-index: 1; }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-faint);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+      margin-bottom: 72px;
+    }
+    .back-link:hover { color: var(--text-muted); }
+    .back-link svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    .wordmark {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 48px;
+    }
+
+    .headline {
+      font-size: clamp(26px, 3vw, 40px);
+      font-weight: 300;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    .subtext {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.8;
+      max-width: 320px;
+      margin-bottom: 44px;
+    }
+
+    .invite-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .invite-list li {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 13px; color: var(--text-muted); font-weight: 300;
+    }
+    .invite-list li::before {
+      content: ''; width: 4px; height: 4px; border-radius: 50%;
+      background: var(--teal-accent); flex-shrink: 0;
+    }
+
+    .left-footer { font-size: 11px; color: var(--text-faint); line-height: 1.9; }
+    .left-footer a { color: var(--text-faint); text-decoration: none; transition: color 0.2s; }
+    .left-footer a:hover { color: var(--text-muted); }
+
+    /* ─── RIGHT PANEL ─────────────────────────────────────── */
+    .right {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 72px 64px 80px 56px;
+      overflow-y: auto;
+    }
+
+    .form-wrap { width: 100%; max-width: 420px; }
+
+    /* ─── STEP LABELS ─────────────────────────────────────── */
+    .step-tag {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--teal-accent);
+      margin-bottom: 12px;
+    }
+
+    .form-heading {
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: -0.015em;
+      margin-bottom: 6px;
+    }
+
+    .form-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 300;
+      margin-bottom: 36px;
+      line-height: 1.65;
+    }
+
+    /* ─── FIELDS ──────────────────────────────────────────── */
+    .field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+
+    .field label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text);
+      background: var(--input-bg);
+      border: 1px solid var(--border-mid);
+      border-radius: 8px;
+      padding: 12px 16px;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238C95A2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 38px;
+      cursor: pointer;
+    }
+    .field select option { background: #fff; color: var(--text); }
+    .field textarea { resize: none; line-height: 1.65; }
+    .field input::placeholder, .field textarea::placeholder { color: var(--text-faint); font-weight: 300; }
+
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--teal-accent);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(29,158,117,0.09);
+    }
+
+    .field input.invalid { border-color: var(--error-border); background: var(--error-bg); }
+    .field input.valid { border-color: var(--teal-mid); }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* Email validation feedback */
+    .email-feedback {
+      font-size: 12px;
+      font-weight: 400;
+      display: none;
+      align-items: center;
+      gap: 5px;
+      margin-top: 4px;
+    }
+    .email-feedback.error { display: flex; color: var(--error); }
+    .email-feedback.ok    { display: flex; color: var(--teal); }
+    .email-feedback svg   { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+    /* ─── DIVIDER ─────────────────────────────────────────── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+    /* ─── BUTTONS ─────────────────────────────────────────── */
+    .btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 8px;
+      padding: 13px 24px;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, opacity 0.2s;
+      border: none;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-primary { background: var(--teal); color: #fff; }
+    .btn-primary:hover { background: #0a5441; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-mid);
+      margin-top: 10px;
+    }
+    .btn-ghost:hover { background: var(--bg-lift); color: var(--text); }
+
+    .form-note {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--text-faint);
+      text-align: center;
+      line-height: 1.65;
+    }
+
+    /* ─── OTP STEP ────────────────────────────────────────── */
+    .otp-email-display {
+      display: inline;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .otp-row {
+      display: flex;
+      gap: 10px;
+      margin: 32px 0 8px;
+    }
+
+    .otp-digit {
+      flex: 1;
+      height: 60px;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 22px;
+      font-weight: 400;
+      text-align: center;
+      color: var(--text);
+      background: var(--input-bg);
+      border: 1px solid var(--border-mid);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+      caret-color: var(--teal);
+    }
+
+    .otp-digit:focus {
+      border-color: var(--teal-accent);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(29,158,117,0.09);
+    }
+
+    .otp-digit.filled {
+      border-color: var(--teal-mid);
+      background: var(--teal-tint);
+      color: var(--teal);
+    }
+
+    .otp-digit.error-shake {
+      border-color: var(--error-border);
+      background: var(--error-bg);
+      animation: shake 0.35s ease;
+    }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-5px); }
+      60%      { transform: translateX(5px); }
+    }
+
+    .resend-wrap {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text-faint);
+    }
+
+    .resend-btn {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--teal);
+      cursor: pointer;
+      padding: 0;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+    .resend-btn:disabled { opacity: 0.4; cursor: not-allowed; color: var(--text-faint); }
+
+    .otp-error {
+      font-size: 12px;
+      color: var(--error);
+      text-align: center;
+      min-height: 18px;
+      margin-top: 6px;
+    }
+
+    /* ─── SUCCESS ─────────────────────────────────────────── */
+    .success {
+      display: none;
+      flex-direction: column;
+      align-items: flex-start;
+      padding-top: 32px;
+    }
+
+    .success-mark {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      border: 1.5px solid var(--teal);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 32px;
+    }
+
+    .success-mark svg {
+      width: 22px; height: 22px;
+      stroke: var(--teal); fill: none;
+      stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    .success h2 {
+      font-size: 30px;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .success p {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 300;
+      line-height: 1.8;
+      max-width: 340px;
+      margin-bottom: 32px;
+    }
+
+    .success a {
+      font-size: 13px;
+      color: var(--teal);
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: gap 0.2s;
+    }
+    .success a:hover { gap: 10px; }
+
+    /* ─── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .page { grid-template-columns: 1fr; }
+      .left {
+        position: relative; height: auto;
+        padding: 32px 24px 36px;
+        border-right: none; border-bottom: 1px solid var(--border-mid);
+      }
+      .back-link { margin-bottom: 28px; }
+      .headline { font-size: 26px; margin-bottom: 12px; }
+      .subtext { margin-bottom: 0; }
+      .invite-list { display: none; }
+      .left-bottom { display: none; }
+      .right { padding: 40px 24px 64px; }
+      .otp-digit { height: 52px; font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- LEFT PANEL -->
+  <div class="left">
+    <div class="left-top">
+      <a href="anthemius-landing.html" class="back-link">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to Anthemius
+      </a>
+
+      <div class="wordmark">Anthemius</div>
+
+      <h1 class="headline">Inviting the people<br>who commission space.</h1>
+
+      <p class="subtext">
+        We are opening the beta to a select group of builders, operators, and leaders in Mumbai and Pune who want to design faster — without compromising on code.
+      </p>
+
+      <ul class="invite-list">
+        <li>Commercial developers and project owners</li>
+        <li>GCC and corporate workplace leads</li>
+        <li>Flex space operators and co-working brands</li>
+        <li>Architecture practices exploring AI-assisted workflows</li>
+        <li>Real estate advisors and tenant rep teams</li>
+      </ul>
+    </div>
+
+    <div class="left-bottom">
+      <div class="left-footer">
+        &copy; 2026 Anthemius &nbsp;&middot;&nbsp;
+        <a href="#">Privacy</a> &nbsp;&middot;&nbsp;
+        <a href="#">Terms</a><br>
+        <a href="mailto:hello@anthemius.ai">hello@anthemius.ai</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right">
+    <div class="form-wrap">
+
+      <!-- STEP 1: APPLICATION FORM -->
+      <div id="step1">
+        <p class="step-tag">Step 1 of 2</p>
+        <h2 class="form-heading">Tell us about your space.</h2>
+        <p class="form-sub">We review every application personally and respond within a few days.</p>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="fname">First name</label>
+            <input type="text" id="fname" placeholder="Norman" required />
+          </div>
+          <div class="field">
+            <label for="lname">Last name</label>
+            <input type="text" id="lname" placeholder="Foster" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="company">Company</label>
+          <input type="text" id="company" placeholder="Company name" required />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="role">Your role</label>
+            <select id="role" required>
+              <option value="" disabled selected>Select</option>
+              <option>Developer / Owner</option>
+              <option>Architect</option>
+              <option>Real estate head</option>
+              <option>Workplace / GCC lead</option>
+              <option>Flex space operator</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="city">City</label>
+            <select id="city" required>
+              <option value="" disabled selected>Select</option>
+              <option>Mumbai</option>
+              <option>Pune</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="linkedin">LinkedIn profile</label>
+          <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourname" required />
+        </div>
+
+        <div class="field">
+          <label for="email">Work email</label>
+          <input type="email" id="email" placeholder="you@company.com" required autocomplete="email" />
+          <div class="email-feedback" id="emailFeedback">
+            <svg id="feedbackIcon" viewBox="0 0 24 24"></svg>
+            <span id="feedbackText"></span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="usecase">What are you planning to design?</label>
+          <textarea id="usecase" rows="3" placeholder="e.g. 8,000 sq ft office fit-out in BKC for a 120-person GCC team"></textarea>
+        </div>
+
+        <hr class="divider" />
+
+        <button class="btn btn-primary" id="step1Btn" onclick="handleStep1()">
+          Send verification code
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+        <p class="form-note">We only accept work email addresses &nbsp;·&nbsp; No spam, ever.</p>
+      </div>
+
+      <!-- STEP 2: OTP VERIFICATION -->
+      <div id="step2" style="display:none">
+        <p class="step-tag">Step 2 of 2</p>
+        <h2 class="form-heading">Check your inbox.</h2>
+        <p class="form-sub">
+          We sent a 6-digit code to <span class="otp-email-display" id="emailDisplay"></span>. It expires in 10 minutes.
+        </p>
+
+        <div class="otp-row" id="otpRow">
+          <input class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+          <input class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+          <input class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+          <input class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+          <input class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+          <input class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+        </div>
+
+        <div class="otp-error" id="otpError"></div>
+
+        <hr class="divider" />
+
+        <button class="btn btn-primary" id="step2Btn" onclick="handleOTP()" disabled>
+          Verify &amp; submit request
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+
+        <div class="resend-wrap">
+          <button class="resend-btn" id="resendBtn" onclick="resendOTP()" disabled>Resend code</button>
+          <span id="resendTimer"> · available in <span id="timerCount">30</span>s</span>
+        </div>
+
+        <button class="btn btn-ghost" onclick="goBack()">← Change details</button>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success" id="stepSuccess">
+        <div class="success-mark">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2>You're on<br>the list.</h2>
+        <p>
+          We've received your request and will be in touch within a few days.
+          In the meantime, feel free to reach out at
+          <a href="mailto:hello@anthemius.ai">hello@anthemius.ai</a>.
+        </p>
+        <a href="anthemius-landing.html">&larr; Back to Anthemius</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+  /* ─────────────────────────────────────────────────────────
+     CONFIGURATION
+     1. Go to https://supabase.com → New project
+     2. Settings → API → copy Project URL and anon key below
+     3. Run this SQL in the Supabase SQL editor:
+
+        create table early_access_requests (
+          id           uuid default gen_random_uuid() primary key,
+          first_name   text not null,
+          last_name    text not null,
+          email        text unique not null,
+          company      text not null,
+          role         text not null,
+          city         text not null,
+          use_case     text,
+          linkedin_url text not null,
+          created_at   timestamptz default now()
+        );
+
+        alter table early_access_requests enable row level security;
+
+        create policy "Authenticated insert"
+          on early_access_requests for insert
+          to authenticated
+          with check (auth.email() = email);
+
+     4. In Supabase → Authentication → Email settings:
+        enable "Email OTP" and set OTP expiry to 600s
+  ─────────────────────────────────────────────────────────── */
+  const SUPABASE_URL      = 'https://yvotmmuwaxnpnbhaxtgf.supabase.co'
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl2b3RtbXV3YXhucG5iaGF4dGdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMDE0OTIsImV4cCI6MjA5NDY3NzQ5Mn0._FVHvlw1SUKVkthJqqyolNWDaBuOB-icf3rwyh3KFZA'
+
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+  /* ── Blocked domains ────────────────────────────────────── */
+  const BLOCKED = new Set([
+    'gmail.com','googlemail.com','yahoo.com','yahoo.co.in','yahoo.co.uk',
+    'yahoo.in','yahoo.fr','yahoo.de','yahoo.es','yahoo.com.br',
+    'hotmail.com','hotmail.co.uk','hotmail.in','hotmail.fr','hotmail.de',
+    'outlook.com','outlook.in','live.com','live.co.uk','live.in',
+    'icloud.com','me.com','mac.com','aol.com','aol.co.uk',
+    'protonmail.com','proton.me','tutanota.com','tutamail.com','tuta.io',
+    'zoho.com','ymail.com','msn.com','inbox.com','rediffmail.com',
+    'rocketmail.com','fastmail.com','hushmail.com','gmx.com','gmx.net',
+    // Disposable / temporary
+    'mailinator.com','guerrillamail.com','guerrillamail.net','guerrillamail.org',
+    'guerrillamail.de','guerrillamail.biz','guerrillamail.info',
+    'trashmail.com','trashmail.at','trashmail.io','trashmail.me','trashmail.net',
+    'yopmail.com','yopmail.fr','fakeinbox.com','mailnesia.com','mailnull.com',
+    'tempr.email','discard.email','throwam.com','spamgourmet.com',
+    'sharklasers.com','spam.la','tempmail.com','temp-mail.org','dispostable.com',
+    'maildrop.cc','10minutemail.com','minutemail.com','getairmail.com',
+    'filzmail.de','meltmail.com','mailexpire.com','binkmail.com',
+    'safetymail.info','tempemail.net','fakemailgenerator.com',
+    'spamfree24.org','harakirimail.com','mailboxy.fun','throwam.com',
+  ])
+
+  /* ── State ──────────────────────────────────────────────── */
+  let formData = {}
+  let resendInterval = null
+
+  /* ── Email validation ───────────────────────────────────── */
+  const emailEl     = document.getElementById('email')
+  const feedbackEl  = document.getElementById('emailFeedback')
+  const feedbackIcon = document.getElementById('feedbackIcon')
+  const feedbackText = document.getElementById('feedbackText')
+
+  function validateEmailDomain(email) {
+    const parts = email.split('@')
+    if (parts.length !== 2 || !parts[1].includes('.')) return null // incomplete
+    const domain = parts[1].toLowerCase().trim()
+    if (BLOCKED.has(domain)) return { ok: false, msg: 'Please use your work email address — personal and temporary addresses are not accepted.' }
+    return { ok: true, msg: 'Looks good.' }
+  }
+
+  emailEl.addEventListener('input', () => {
+    const result = validateEmailDomain(emailEl.value)
+    feedbackEl.className = 'email-feedback'
+    if (!result) return
+    if (result.ok) {
+      feedbackEl.classList.add('ok')
+      feedbackIcon.innerHTML = '<polyline points="20 6 9 17 4 12"/>'
+      emailEl.classList.remove('invalid'); emailEl.classList.add('valid')
+    } else {
+      feedbackEl.classList.add('error')
+      feedbackIcon.innerHTML = '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'
+      emailEl.classList.remove('valid'); emailEl.classList.add('invalid')
+    }
+    feedbackText.textContent = result.msg
+  })
+
+  /* ── LinkedIn normalisation ─────────────────────────────── */
+  function normaliseLinkedIn(val) {
+    val = val.trim()
+    if (!val) return null
+    if (val.startsWith('http')) return val
+    if (val.startsWith('linkedin.com')) return 'https://' + val
+    if (val.startsWith('/in/')) return 'https://www.linkedin.com' + val
+    if (val.match(/^[\w-]+$/)) return 'https://www.linkedin.com/in/' + val
+    return val
+  }
+
+  function isValidLinkedIn(url) {
+    return /linkedin\.com\/in\/[\w-]+/i.test(url)
+  }
+
+  /* ── Step 1 submit ──────────────────────────────────────── */
+  async function handleStep1() {
+    const btn = document.getElementById('step1Btn')
+    const firstName = document.getElementById('fname').value.trim()
+    const lastName  = document.getElementById('lname').value.trim()
+    const company   = document.getElementById('company').value.trim()
+    const role      = document.getElementById('role').value
+    const city      = document.getElementById('city').value
+    const linkedin  = normaliseLinkedIn(document.getElementById('linkedin').value)
+    const email     = document.getElementById('email').value.trim().toLowerCase()
+    const usecase   = document.getElementById('usecase').value.trim()
+
+    // Basic presence checks
+    if (!firstName || !lastName || !company || !role || !city || !email) {
+      alert('Please fill in all required fields.'); return
+    }
+
+    // LinkedIn check
+    if (!linkedin || !isValidLinkedIn(linkedin)) {
+      document.getElementById('linkedin').focus()
+      alert('Please enter a valid LinkedIn profile URL (e.g. https://linkedin.com/in/yourname).')
+      return
+    }
+
+    // Email domain check
+    const emailCheck = validateEmailDomain(email)
+    if (!emailCheck || !emailCheck.ok) {
+      emailEl.focus()
+      alert('Please use your work email address.'); return
+    }
+
+    // Store form data
+    formData = { firstName, lastName, company, role, city, email, linkedin, usecase }
+
+    // Send OTP
+    btn.textContent = 'Sending code…'
+    btn.disabled = true
+
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: true }
+    })
+
+    if (error) {
+      btn.textContent = 'Send verification code'
+      btn.disabled = false
+      alert('Could not send code: ' + error.message)
+      return
+    }
+
+    // Transition to step 2
+    document.getElementById('step1').style.display = 'none'
+    document.getElementById('step2').style.display = 'block'
+    document.getElementById('emailDisplay').textContent = email
+    initOTP()
+    startResendTimer()
+  }
+
+  /* ── OTP digit inputs ───────────────────────────────────── */
+  function initOTP() {
+    const digits = document.querySelectorAll('.otp-digit')
+
+    digits.forEach((el, i) => {
+      el.value = ''
+      el.classList.remove('filled', 'error-shake')
+
+      el.addEventListener('input', e => {
+        const val = e.target.value.replace(/\D/g, '')
+        el.value = val ? val[val.length - 1] : ''
+        el.classList.toggle('filled', !!el.value)
+        if (el.value && i < digits.length - 1) digits[i + 1].focus()
+        updateSubmitBtn()
+      })
+
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !el.value && i > 0) {
+          digits[i - 1].focus()
+          digits[i - 1].value = ''
+          digits[i - 1].classList.remove('filled')
+          updateSubmitBtn()
+        }
+        if (e.key === 'ArrowLeft' && i > 0) digits[i - 1].focus()
+        if (e.key === 'ArrowRight' && i < digits.length - 1) digits[i + 1].focus()
+      })
+
+      el.addEventListener('paste', e => {
+        e.preventDefault()
+        const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '')
+        digits.forEach((d, j) => {
+          d.value = pasted[j] || ''
+          d.classList.toggle('filled', !!d.value)
+        })
+        const focusIdx = Math.min(pasted.length, digits.length - 1)
+        digits[focusIdx].focus()
+        updateSubmitBtn()
+      })
+    })
+
+    digits[0].focus()
+  }
+
+  function getOTPCode() {
+    return [...document.querySelectorAll('.otp-digit')].map(d => d.value).join('')
+  }
+
+  function updateSubmitBtn() {
+    document.getElementById('step2Btn').disabled = getOTPCode().length < 6
+  }
+
+  /* ── Verify OTP & store ─────────────────────────────────── */
+  async function handleOTP() {
+    const btn = document.getElementById('step2Btn')
+    const errEl = document.getElementById('otpError')
+    const code = getOTPCode()
+    if (code.length < 6) return
+
+    btn.textContent = 'Verifying…'
+    btn.disabled = true
+    errEl.textContent = ''
+
+    // Verify OTP with Supabase
+    const { error: verifyErr } = await sb.auth.verifyOtp({
+      email: formData.email,
+      token: code,
+      type: 'email'
+    })
+
+    if (verifyErr) {
+      // Shake digits
+      document.querySelectorAll('.otp-digit').forEach(d => {
+        d.classList.remove('error-shake')
+        void d.offsetWidth // reflow
+        d.classList.add('error-shake')
+      })
+      errEl.textContent = 'Incorrect code — please try again.'
+      btn.textContent = 'Verify & submit request'
+      btn.disabled = false
+      return
+    }
+
+    // Store to database
+    btn.textContent = 'Submitting…'
+    const { error: dbErr } = await sb
+      .from('early_access_requests')
+      .insert({
+        first_name:   formData.firstName,
+        last_name:    formData.lastName,
+        email:        formData.email,
+        company:      formData.company,
+        role:         formData.role,
+        city:         formData.city,
+        use_case:     formData.usecase,
+        linkedin_url: formData.linkedin,
+      })
+
+    if (dbErr && dbErr.code !== '23505') { // 23505 = duplicate, treat as success
+      errEl.textContent = 'Submission error — please email hello@anthemius.ai directly.'
+      btn.textContent = 'Verify & submit request'
+      btn.disabled = false
+      return
+    }
+
+    // Success
+    clearInterval(resendInterval)
+    document.getElementById('step2').style.display = 'none'
+    const s = document.getElementById('stepSuccess')
+    s.style.display = 'flex'
+  }
+
+  /* ── Resend OTP ─────────────────────────────────────────── */
+  function startResendTimer() {
+    const resendBtn   = document.getElementById('resendBtn')
+    const timerWrap   = document.getElementById('resendTimer')
+    const timerCount  = document.getElementById('timerCount')
+    let seconds = 30
+    resendBtn.disabled = true
+    timerWrap.style.display = 'inline'
+    timerCount.textContent = seconds
+
+    clearInterval(resendInterval)
+    resendInterval = setInterval(() => {
+      seconds--
+      timerCount.textContent = seconds
+      if (seconds <= 0) {
+        clearInterval(resendInterval)
+        resendBtn.disabled = false
+        timerWrap.style.display = 'none'
+      }
+    }, 1000)
+  }
+
+  async function resendOTP() {
+    const resendBtn = document.getElementById('resendBtn')
+    resendBtn.disabled = true
+    resendBtn.textContent = 'Sending…'
+    await sb.auth.signInWithOtp({ email: formData.email, options: { shouldCreateUser: true } })
+    resendBtn.textContent = 'Resend code'
+    document.getElementById('otpError').textContent = ''
+    startResendTimer()
+    initOTP()
+  }
+
+  /* ── Go back ────────────────────────────────────────────── */
+  function goBack() {
+    clearInterval(resendInterval)
+    document.getElementById('step2').style.display = 'none'
+    document.getElementById('step1').style.display = 'block'
+    const btn = document.getElementById('step1Btn')
+    btn.textContent = 'Send verification code'
+    btn.disabled = false
+  }
+</script>
+
+</body>
+</html>

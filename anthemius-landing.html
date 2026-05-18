@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anthemius — Voice to Compliant Layout</title>
+  <meta name="description" content="The AI design tool that turns spoken space briefs into building code-aware layout variations - instantly. No CAD. No back-and-forth." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal-primary: #0F6E56;
+      --teal-accent:  #1D9E75;
+      --teal-tint:    #E1F5EE;
+      --teal-mid:     #9FE1CB;
+      --ink:          #1A1F27;
+      --ink-muted:    #4A5260;
+      --ink-faint:    #8C95A2;
+      --surface:      #F7F8F9;
+      --border:       rgba(26,31,39,0.09);
+      --white:        #FFFFFF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--white);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .wordmark {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--teal-primary);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--teal-primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      letter-spacing: 0.01em;
+    }
+    .btn-primary:hover { background: #0a5441; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      color: var(--teal-primary);
+      border: 1.5px solid var(--teal-mid);
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--teal-accent); background: var(--teal-tint); }
+
+    /* ─── HERO ────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Blueprint grid */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(29,158,117,0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(29,158,117,0.055) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+    }
+
+    /* Subtle radial glow */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(29,158,117,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: var(--teal-tint);
+      color: var(--teal-primary);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-bottom: 32px;
+    }
+
+    .hero-headline {
+      font-size: clamp(42px, 7vw, 72px);
+      font-weight: 300;
+      color: var(--ink);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .hero-headline em {
+      font-style: normal;
+      color: var(--teal-accent);
+    }
+
+    .hero-sub {
+      font-size: clamp(15px, 2vw, 17px);
+      color: var(--ink-muted);
+      line-height: 1.7;
+      max-width: 480px;
+      margin: 0 auto 40px;
+      font-weight: 300;
+    }
+
+    .hero-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary.lg { padding: 14px 28px; font-size: 14px; border-radius: 8px; }
+    .btn-ghost.lg   { padding: 14px 28px; font-size: 14px; border-radius: 8px; }
+
+    .hero-note {
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--ink-faint);
+    }
+
+    /* ─── PROOF STRIP ─────────────────────────────────────── */
+    .proof-strip {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .proof-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+
+    .proof-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--teal-accent);
+      flex-shrink: 0;
+    }
+
+    /* ─── HOW IT WORKS ────────────────────────────────────── */
+    section { padding: 112px 48px; }
+
+    .section-tag {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--teal-accent);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 300;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: 64px;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .step {
+      padding: 40px 36px;
+      background: var(--white);
+      border: 1px solid var(--border);
+    }
+
+    .step:first-child { border-radius: 12px 0 0 12px; }
+    .step:last-child  { border-radius: 0 12px 12px 0; }
+
+    .step-num {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--teal-accent);
+      letter-spacing: 0.06em;
+      margin-bottom: 24px;
+    }
+
+    .step-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: var(--teal-tint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .step-icon svg { width: 20px; height: 20px; stroke: var(--teal-primary); fill: none; stroke-width: 1.6; }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .step-body {
+      font-size: 14px;
+      color: var(--ink-muted);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ─── FOR WHOM ────────────────────────────────────────── */
+    .for-section {
+      background: var(--surface);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 36px 32px;
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal-accent);
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 12px;
+      line-height: 1.25;
+    }
+
+    .card-body {
+      font-size: 14px;
+      color: var(--ink-muted);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    .card-list {
+      list-style: none;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-list li {
+      font-size: 13px;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-weight: 300;
+    }
+
+    .card-list li::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--teal-mid);
+      margin-top: 7px;
+      flex-shrink: 0;
+    }
+
+    /* ─── COMPLIANCE ──────────────────────────────────────── */
+    .compliance {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .compliance-badges {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 40px;
+    }
+
+    .badge {
+      background: var(--teal-tint);
+      color: var(--teal-primary);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 8px 18px;
+      border-radius: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .badge.neutral {
+      background: var(--surface);
+      color: var(--ink-muted);
+    }
+
+    /* ─── FINAL CTA ───────────────────────────────────────── */
+    .final-cta {
+      background: var(--ink);
+      color: var(--white);
+      text-align: center;
+      padding: 120px 48px;
+    }
+
+    .final-cta .section-tag { color: var(--teal-mid); }
+
+    .final-cta .section-title {
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+
+    .final-cta > p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.45);
+      font-weight: 300;
+      max-width: 380px;
+      margin: 0 auto 40px;
+      line-height: 1.75;
+    }
+
+    .btn-primary.inverted {
+      background: var(--white);
+      color: var(--ink);
+    }
+    .btn-primary.inverted:hover { background: var(--teal-tint); color: var(--teal-primary); }
+
+    /* ─── FOOTER ──────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background: var(--ink);
+      padding: 32px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-wordmark {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: rgba(255,255,255,0.7); }
+
+    .footer-copy {
+      font-size: 12px;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* ─── DIVIDER LINE ────────────────────────────────────── */
+    .center { text-align: center; }
+
+    /* ─── SCROLL FADE IN ──────────────────────────────────── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      nav .nav-links { display: none; }
+      .hero { padding: 100px 20px 60px; }
+      .proof-strip { padding: 20px 20px; gap: 20px; }
+      section { padding: 72px 20px; }
+      .steps { grid-template-columns: 1fr; gap: 2px; }
+      .step:first-child { border-radius: 12px 12px 0 0; }
+      .step:last-child  { border-radius: 0 0 12px 12px; }
+      .cards { grid-template-columns: 1fr; }
+      .final-cta { padding: 64px 20px; flex-direction: column; align-items: center; }
+      .final-cta-left { max-width: 100%; }
+      .form-card { padding: 28px 24px; }
+      footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="wordmark">Anthemius</a>
+    <ul class="nav-links">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#for">Who it's for</a></li>
+      <li><a href="#compliance">How it's built</a></li>
+    </ul>
+    <a href="anthemius-access.html" class="btn-primary">Request access</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="hero-tag">Early access · Mumbai &amp; Pune</span>
+      <h1 class="hero-headline">
+        Voice to<br><em>compliant layout.</em>
+      </h1>
+      <p class="hero-sub">
+        Describe your space in plain language. Anthemius generates building code-aware layout variations — instantly, without CAD, without a design brief.
+      </p>
+      <div class="hero-cta">
+        <a href="anthemius-access.html" class="btn-primary lg">Request early access &rarr;</a>
+        <a href="#how" class="btn-ghost lg">See how it works</a>
+      </div>
+      <p class="hero-note">Invite-only beta &nbsp;·&nbsp; Building code-aware &nbsp;·&nbsp; Multiple layout variations</p>
+    </div>
+  </section>
+
+  <!-- PROOF STRIP -->
+  <div class="proof-strip">
+    <div class="proof-item"><div class="proof-dot"></div>Building code-aware generation</div>
+    <div class="proof-item"><div class="proof-dot"></div>Multiple layout variations</div>
+    <div class="proof-item"><div class="proof-dot"></div>No CAD required</div>
+    <div class="proof-item"><div class="proof-dot"></div>Instant design exploration</div>
+    <div class="proof-item"><div class="proof-dot"></div>Export-ready outputs</div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="center">
+    <p class="section-tag">How it works</p>
+    <h2 class="section-title">Three steps. One conversation.</h2>
+    <div class="steps fade-in">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-icon">
+          <!-- Mic icon -->
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="2" width="6" height="11" rx="3"/>
+            <path d="M5 10a7 7 0 0 0 14 0"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+            <line x1="8" y1="22" x2="16" y2="22"/>
+          </svg>
+        </div>
+        <div class="step-title">Speak</div>
+        <div class="step-body">Describe the space - its function, area, number of occupants, and any constraints. No forms. No CAD. Just a conversation.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-icon">
+          <!-- Grid/layout icon -->
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </div>
+        <div class="step-title">Generate</div>
+        <div class="step-body">Anthemius produces multiple layout variations, each drawn to building code — zoning, circulation, and occupancy applied automatically.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-icon">
+          <!-- Review/eye icon -->
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <div class="step-title">Review</div>
+        <div class="step-body">Browse variations, refine through conversation, and export the layouts you want to take forward. You stay in control at every step.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOR WHOM -->
+  <section id="for" class="for-section center">
+    <p class="section-tag">Who it's for</p>
+    <h2 class="section-title">Built for the people who<br>commission space, not draw it.</h2>
+    <div class="cards fade-in">
+
+      <div class="card">
+        <div class="card-label">Commercial Developers</div>
+        <div class="card-title">Move from brief to layout — without the back-and-forth.</div>
+        <div class="card-body">Explore multiple configurations for a site before committing to a full architectural engagement.</div>
+        <ul class="card-list">
+          <li>Mixed-use and commercial blocks</li>
+          <li>Rapid feasibility layouts</li>
+          <li>Pre-design cost modelling inputs</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-label">GCCs &amp; Corporates</div>
+        <div class="card-title">Plan your workspace before you sign the lease.</div>
+        <div class="card-body">Test fit-out configurations against any floor plate, in hours — not weeks. Compliant from day one.</div>
+        <ul class="card-list">
+          <li>Office fit-out planning</li>
+          <li>Multi-city rollouts</li>
+          <li>Code-aware occupancy modelling</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Flex Space Operators</div>
+        <div class="card-title">More layouts. Faster. For every property you acquire.</div>
+        <div class="card-body">Anthemius becomes your first-pass design layer — so your architects focus on execution, not ideation.</div>
+        <ul class="card-list">
+          <li>Co-working &amp; managed office</li>
+          <li>High-density occupancy models</li>
+          <li>Rapid acquisition assessment</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CODE AWARENESS -->
+  <section id="compliance" class="center">
+    <div class="compliance fade-in">
+      <p class="section-tag">Code-aware by design</p>
+      <h2 class="section-title" style="margin-bottom:16px">Constraints built in,<br>not bolted on.</h2>
+      <p style="font-size:15px;color:var(--ink-muted);line-height:1.7;font-weight:300;max-width:520px;margin:0 auto">
+        Anthemius is trained on building codes, zoning logic, and occupancy norms. Every layout it generates has those constraints baked in — not checked after the fact.
+      </p>
+      <div class="compliance-badges">
+        <span class="badge">Building code-aware</span>
+        <span class="badge">Zoning logic applied</span>
+        <span class="badge">Occupancy norms</span>
+        <span class="badge neutral">Circulation standards</span>
+        <span class="badge neutral">User-reviewed output</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section id="access" class="final-cta">
+    <p class="section-tag">Early access</p>
+    <h2 class="section-title" style="margin-bottom:16px">You speak.<br>Anthemius builds.</h2>
+    <p>Invite-only beta. We're working with a select group of developers, GCCs, and flex operators in Mumbai and Pune.</p>
+    <a href="anthemius-access.html" class="btn-primary inverted lg">Request early access &rarr;</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-wordmark">Anthemius</span>
+    <ul class="footer-links">
+      <li><a href="#">Privacy</a></li>
+      <li><a href="#">Terms</a></li>
+      <li><a href="mailto:hello@anthemius.ai">Contact</a></li>
+    </ul>
+    <span class="footer-copy">&copy; 2026 Anthemius. Mumbai &amp; Pune.</span>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
